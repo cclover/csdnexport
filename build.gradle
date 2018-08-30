@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.61'
+}
+
+group 'com.cc'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile "us.codecraft:webmagic-core:0.7.3"
+    compile "us.codecraft:webmagic-extension:0.7.3"
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+
+    compile "mysql:mysql-connector-java:8.0.12"
+
+    compile 'org.apache.commons:commons-dbcp2:2.5.0'
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+//task "create-dirs" << {
+//    sourceSets*.java.srcDirs*.each { it.mkdirs() }
+//    sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+//}

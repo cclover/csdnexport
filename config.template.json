@@ -1,0 +1,16 @@
+{
+  "wordpress": {
+    "DBIP": "127.0.0.1",
+    "DBPort": 3306,
+    "DBName": "wordpress",
+    "DBUser": "wordpress",
+    "DBPassword": "wordpress",
+    "UserID": 1,
+    "ImgUrl": "/wp-content/uploads/csdn/"
+  },
+  "csdn": {
+    "userName": "csdn",
+    "pageCount": 1,
+    "onlyOriginal": true
+  }
+}
