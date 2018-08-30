@@ -3,7 +3,6 @@ package com.cc.csdnexport.wordpress
 import com.cc.csdnexport.config.Constant
 import com.cc.csdnexport.config.ExportConfigManager
 import org.apache.commons.dbcp2.BasicDataSource
-import java.net.URLEncoder
 import java.sql.Connection
 import java.sql.Statement
 import java.sql.Types
@@ -138,7 +137,7 @@ object DBHelper {
     /**
      * 向数据库插入评论
      */
-    fun insertComments(conn: Connection, comments: List<TableComments>) {
+    fun insertComments(conn: Connection, comments: List<TableComments>): Boolean {
 
         val pst = conn.prepareStatement(SQL_COMMENT_INSERT)
         for (comment in comments) {
@@ -160,7 +159,7 @@ object DBHelper {
         }
 
         // 执行批量更新
-        pst.executeBatch()
+        return pst.executeBatch().size == comments.size
     }
 
 

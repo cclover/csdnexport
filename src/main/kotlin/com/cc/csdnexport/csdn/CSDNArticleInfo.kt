@@ -24,6 +24,6 @@ class CSDNArticleInfo {
                 "Category: $category\r\n" +
                 "Content Length:  ${content?.length}\r\n" +
                 "Tag: $tags\r\n" +
-                "Comments Count: ${comments?.size}"
+                "Comments Count: ${comments.size}"
     }
 }

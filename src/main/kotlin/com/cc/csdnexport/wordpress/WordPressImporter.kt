@@ -1,8 +1,8 @@
 package com.cc.csdnexport.wordpress
 
-import com.cc.csdnexport.config.ExportConfigManager
 import com.cc.csdnexport.csdn.CSDNArticleInfo
 import com.cc.csdnexport.csdn.CSDNCommentInfo
+import com.cc.csdnexport.tool.LogUtils
 import java.sql.Connection
 
 object WordPressImporter {
@@ -13,6 +13,8 @@ object WordPressImporter {
      */
     @Synchronized
     fun import(article: CSDNArticleInfo) {
+
+        LogUtils.d("Import to wordpress. Article: ${article.articleId}")
 
         var conn: Connection? = null
         try {
@@ -28,33 +30,49 @@ object WordPressImporter {
 
                 // postid 无效
                 if (postID == -1L) {
-                    conn?.rollback() //回滚
+
+                    LogUtils.e("Failed to insert post! Article: ${article.articleId}")
+                    conn.rollback() //回滚
                     return
                 }
 
                 // 向数据库插入评论
-                importComments(conn, postID, article.comments)
+                if (!importComments(conn, postID, article.comments)) {
+
+                    LogUtils.e("Failed to insert comments! Article: ${article.articleId}")
+                    conn.rollback() //回滚
+                    return
+                }
 
                 // 写入文章的类型
                 if (!importCategory(conn, postID, article)) {
-                    conn?.rollback() //回滚
+
+                    LogUtils.e("Failed to insert category! Article: ${article.articleId}")
+                    conn.rollback() //回滚
                     return
                 }
 
 
                 // 写入文章的tag
                 if (!importTags(conn, postID, article)) {
-                    conn?.rollback() //回滚
+
+                    LogUtils.e("Failed to insert tags! Article: ${article.articleId}")
+                    conn.rollback() //回滚
                     return
                 }
 
                 conn.commit();//提交事务
+
+                LogUtils.d("Import success. Article: ${article.articleId} --> Post: $postID")
             }
 
         } catch (ex: Exception) {
 
             ex.printStackTrace()
             conn?.rollback() //回滚
+
+            LogUtils.e("MySql exception!!")
+            LogUtils.e(ex)
 
         } finally {
             DBHelper.closeConnection(conn)
@@ -69,20 +87,22 @@ object WordPressImporter {
     }
 
 
-    private fun importComments(conn: Connection, postID: Long, commentList: ArrayList<CSDNCommentInfo>) {
+    private fun importComments(conn: Connection, postID: Long, commentList: ArrayList<CSDNCommentInfo>): Boolean {
 
         var comments: ArrayList<TableComments> = arrayListOf();
         for (csdnComment in commentList) {
             comments.add(TableComments(postID, csdnComment))
         }
 
-        DBHelper.insertComments(conn, comments)
+        return DBHelper.insertComments(conn, comments)
     }
 
 
     private fun importCategory(conn: Connection, postID: Long, article: CSDNArticleInfo): Boolean {
 
         if (article.category.isNullOrEmpty()) {
+
+            LogUtils.d("The article do not have category! Article: ${article.articleId}")
             return true
         }
 
@@ -90,6 +110,8 @@ object WordPressImporter {
         var term = TableTerms(article.category!!)
         val termID = DBHelper.queryOrCreateTermsID(conn, term)
         if (termID == -1L) {
+
+            LogUtils.d("Failed to create category terms: ${article.category}! Article: ${article.articleId}")
             return false
         }
 
@@ -97,6 +119,8 @@ object WordPressImporter {
         var termTaxonomy = TableTermTaxonomy(termID, TableTermTaxonomy.CATEGORY, 0)
         val termTaxonomyID = DBHelper.updateOrCreateTermsTaxonomy(conn, termTaxonomy)
         if (termTaxonomyID == -1L) {
+
+            LogUtils.d("Failed to create category terms taxonomy! Article: ${article.articleId}")
             return false
         }
 
@@ -109,6 +133,8 @@ object WordPressImporter {
     private fun importTags(conn: Connection, postID: Long, article: CSDNArticleInfo): Boolean {
 
         if (article.tags.isEmpty()) {
+
+            LogUtils.d("The article do not have tags! Article: ${article.articleId}")
             return true
         }
 
@@ -118,6 +144,8 @@ object WordPressImporter {
             var term = TableTerms(tag)
             val termID = DBHelper.queryOrCreateTermsID(conn, term)
             if (termID == -1L) {
+
+                LogUtils.d("Failed to create category terms: $tag! Article: ${article.articleId}")
                 return false
             }
 
@@ -125,6 +153,8 @@ object WordPressImporter {
             var termTaxonomy = TableTermTaxonomy(termID, TableTermTaxonomy.POST_TAG, 0)
             val termTaxonomyID = DBHelper.updateOrCreateTermsTaxonomy(conn, termTaxonomy)
             if (termTaxonomyID == -1L) {
+
+                LogUtils.d("Failed to create tags terms taxonomy! Article: ${article.articleId}")
                 return false
             }
 

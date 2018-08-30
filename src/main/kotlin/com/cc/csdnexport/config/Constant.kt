@@ -115,6 +115,5 @@ object Constant {
     const val REGEX_CSDN_IMG = "https:\\/\\/img-blog\\.csdn\\.net\\/(?<name>\\d+)"
 
 
-
     const val REGEX_CSDN_IMG_PATH = "https:\\/\\/img-blog\\.csdn\\.net\\/"
 }

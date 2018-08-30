@@ -27,6 +27,8 @@ object HttpDownloader {
 
         } catch (ex: Exception) {
             ex.printStackTrace()
+            LogUtils.e("download exception: $path")
+            LogUtils.e(ex)
             throw ex
         } finally {
             inStream?.close()
@@ -69,6 +71,9 @@ object HttpDownloader {
 
         } catch (ex: Exception) {
             ex.printStackTrace()
+
+            LogUtils.e("downloadFile exception: $path->${file.absolutePath}")
+            LogUtils.e(ex)
         } finally {
             inStream?.close()
             outStream?.close()

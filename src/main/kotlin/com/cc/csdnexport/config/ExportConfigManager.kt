@@ -57,24 +57,30 @@ object ExportConfigManager {
         }
 
         // 用户名不为空, 页面大于1
-        if (exportConfig!!.csdn!!.userName.isNullOrEmpty() || exportConfig!!.csdn!!.pageCount < 1) {
+        if (exportConfig!!.csdn!!.userName.isEmpty() || exportConfig!!.csdn!!.pageCount < 1) {
 
             println("Invalid CSDN Config")
             return false
         }
 
         // db信息
-        if (exportConfig!!.wordpress!!.DBIp.isNullOrEmpty() ||
+        if (exportConfig!!.wordpress!!.DBIp.isEmpty() ||
                 exportConfig!!.wordpress!!.DBPort <= 0 ||
-                exportConfig!!.wordpress!!.DBName.isNullOrEmpty() ||
-                exportConfig!!.wordpress!!.DBUser.isNullOrEmpty() ||
-                exportConfig!!.wordpress!!.DBPassword.isNullOrEmpty()) {
+                exportConfig!!.wordpress!!.DBName.isEmpty() ||
+                exportConfig!!.wordpress!!.DBUser.isEmpty() ||
+                exportConfig!!.wordpress!!.DBPassword.isEmpty()) {
 
             println("Invalid DB Config")
             return false
         }
 
         return true
+    }
+
+
+    fun getBlogListCount(): Int {
+
+        return exportConfig!!.csdn!!.pageCount
     }
 
 

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger
 
 object LogUtils {
 
-    internal var logger = Logger.getLogger(LogUtils::class.java)
+    private val logger = Logger.getLogger(LogUtils::class.java)
 
     fun d(message: Any) {
 

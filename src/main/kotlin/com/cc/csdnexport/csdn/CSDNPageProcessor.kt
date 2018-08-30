@@ -2,9 +2,10 @@ package com.cc.csdnexport.csdn
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
-import com.cc.csdnexport.tool.HttpDownloader
 import com.cc.csdnexport.config.Constant
 import com.cc.csdnexport.config.ExportConfigManager
+import com.cc.csdnexport.tool.HttpDownloader
+import com.cc.csdnexport.tool.LogUtils
 import com.cc.csdnexport.wordpress.WordPressImporter
 import us.codecraft.webmagic.Page
 import us.codecraft.webmagic.Site
@@ -52,8 +53,10 @@ class CSDNPageProcessor : PageProcessor {
      */
     fun handleArticleList(page: Page) {
 
+        LogUtils.d("Handle article list: ${page.url}")
+
         // 获取文章列表下的的所有的文章连接 ，指定xpath，如果不限定，需要过滤相同的文章地址
-        var linkList = page.html.xpath(Constant.XPATH_ARTICLE_MAIN).links()
+        val linkList = page.html.xpath(Constant.XPATH_ARTICLE_MAIN).links()
         for (link in linkList.nodes()) {
             if (isArticleLink(link) && !handleList.contains(link.get())) {
 
@@ -90,30 +93,33 @@ class CSDNPageProcessor : PageProcessor {
      */
     private fun handleArticle(page: Page): Unit {
 
+
+        LogUtils.d("Handle Article: ${page.url}")
+
         // 文章id
-        var articleUrl = page.url.get()
+        val articleUrl = page.url.get()
         var articleId = ""
-        var index = articleUrl.lastIndexOf("/")
+        val index = articleUrl.lastIndexOf("/")
         if (index > 0) {
             articleId = articleUrl.substring(index + 1)
         }
-        if (articleId.isNullOrEmpty()) {
+        if (articleId.isEmpty()) {
 
-            println("The articleId is empty")
+            LogUtils.e("The articleId is empty: ${page.url}")
             return
         }
 
         // 标题
         val title = page.html.xpath(Constant.XPATH_ARTICLE_TITLE).get()
         if (title.isNullOrEmpty()) {
-            println("The article title empty")
+            LogUtils.e("The article title empty: ${page.url}")
             return
         }
 
         // 内容
         var tmpContent = page.html.xpath(Constant.XPATH_ARTICLE_CONTENT).get()
         if (tmpContent.isNullOrEmpty()) {
-            println("The content title empty")
+            println("The content title empty: ${page.url}")
             return
         }
         // 过滤一下
@@ -134,7 +140,8 @@ class CSDNPageProcessor : PageProcessor {
 
 
         // 生成CSDNArticleInfo对象
-        var articleInfo = CSDNArticleInfo()
+        val articleInfo = CSDNArticleInfo()
+        articleInfo.articleId = articleId
         articleInfo.url = page.url.get()
         articleInfo.title = title
         articleInfo.time = postTime
@@ -143,7 +150,7 @@ class CSDNPageProcessor : PageProcessor {
         articleInfo.tags.addAll(tagList)
         articleInfo.comments.addAll(requestComments(articleId))
 
-        println("Thread: ${Thread.currentThread().id} \r\n$articleInfo")
+        LogUtils.d("Parse Article result:\r\n$articleInfo")
 
         // 写入到数据库
         WordPressImporter.import(articleInfo)
@@ -189,7 +196,7 @@ class CSDNPageProcessor : PageProcessor {
         }
 
         //替换图片路径
-        var contentBuffer: StringBuffer = StringBuffer(content)
+        val contentBuffer = StringBuffer(content)
         return contentBuffer.replace(Regex(Constant.REGEX_CSDN_IMG_PATH), ExportConfigManager.getImagePath())
     }
 
@@ -199,9 +206,9 @@ class CSDNPageProcessor : PageProcessor {
      */
     private fun requestComments(id: String): List<CSDNCommentInfo> {
 
-        var commentList: ArrayList<CSDNCommentInfo> = arrayListOf()
+        val commentList: ArrayList<CSDNCommentInfo> = arrayListOf()
 
-        if (id.isNullOrEmpty()) {
+        if (id.isEmpty()) {
             return commentList
         }
 
@@ -212,7 +219,7 @@ class CSDNPageProcessor : PageProcessor {
         while (pageIndex <= pageCount) {
 
             // 请求评论数据
-            var commentUrl = ExportConfigManager.getCommentListUrl(id, pageIndex++)
+            val commentUrl = ExportConfigManager.getCommentListUrl(id, pageIndex++)
             val result = HttpDownloader.download(commentUrl)
 
             // 处理请求结果
@@ -227,7 +234,7 @@ class CSDNPageProcessor : PageProcessor {
                     }
 
                     // 数据段
-                    var data = info.getJSONObject("data")
+                    val data = info.getJSONObject("data")
                     if (data == null || data.isEmpty()) {
                         return commentList
                     }
@@ -236,28 +243,28 @@ class CSDNPageProcessor : PageProcessor {
                     pageCount = data.getIntValue("page_count")
 
                     // 获取评论信息
-                    var list = data.getJSONArray("list")
+                    val list = data.getJSONArray("list")
                     if (list.size > 0) {
 
                         for (comment in list) {
 
-                            var commentObject = comment as JSONObject
+                            val commentObject = comment as JSONObject
 
                             // 评论
-                            var jsonInfo = commentObject.getJSONObject("info")
-                            var commentInfo = parseComment(jsonInfo)
+                            val jsonInfo = commentObject.getJSONObject("info")
+                            val commentInfo = parseComment(jsonInfo)
                             if (commentInfo != null) {
                                 commentList.add(commentInfo)
                             }
 
                             // 评论下的子评论
-                            var subArray = commentObject.getJSONArray("sub")
+                            val subArray = commentObject.getJSONArray("sub")
                             if (subArray == null || subArray.isEmpty()) {
                                 continue
                             }
                             for (subInfo in subArray) {
 
-                                var subCommentInfo = parseComment(subInfo as JSONObject)
+                                val subCommentInfo = parseComment(subInfo as JSONObject)
                                 if (subCommentInfo != null) {
 
                                     //[reply]Renmingqiang[/reply] 处理一下，改为回复
@@ -279,7 +286,7 @@ class CSDNPageProcessor : PageProcessor {
 
         try {
 
-            var commentInfo = CSDNCommentInfo()
+            val commentInfo = CSDNCommentInfo()
             commentInfo.articleId = jsonInfo.getString("ArticleId")
             commentInfo.time = jsonInfo.getString("PostTime")
             commentInfo.comment = jsonInfo.getString("Content")
