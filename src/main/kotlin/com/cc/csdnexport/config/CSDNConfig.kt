@@ -16,4 +16,10 @@ class CSDNConfig {
      * 是否只抓取原创文章
      */
     var onlyOriginal: Boolean = false
+
+
+    /**
+     * 文章列表，为空表示全部
+     */
+    var articles: ArrayList<String> = arrayListOf()
 }

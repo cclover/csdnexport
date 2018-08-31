@@ -35,6 +35,7 @@ object WordPressImporter {
                     conn.rollback() //回滚
                     return
                 }
+                LogUtils.d("New PostId: $postID. Article: ${article.articleId}")
 
                 // 向数据库插入评论
                 if (!importComments(conn, postID, article.comments)) {
@@ -107,25 +108,30 @@ object WordPressImporter {
         }
 
         // 从terms表获取这个分类的ID，没有就创建一个
-        var term = TableTerms(article.category!!)
+        val term = TableTerms(article.category!!)
         val termID = DBHelper.queryOrCreateTermsID(conn, term)
         if (termID == -1L) {
 
             LogUtils.d("Failed to create category terms: ${article.category}! Article: ${article.articleId}")
             return false
         }
+        //LogUtils.d("Category TermID: $termID. Term:${article.category} Article: ${article.articleId}")
 
         // 查看这个terms是否设置为Category，否则创建一个， 目前都是以草稿发布，不更新数量
-        var termTaxonomy = TableTermTaxonomy(termID, TableTermTaxonomy.CATEGORY, 0)
+        val termTaxonomy = TableTermTaxonomy(termID, TableTermTaxonomy.CATEGORY, 0)
         val termTaxonomyID = DBHelper.updateOrCreateTermsTaxonomy(conn, termTaxonomy)
         if (termTaxonomyID == -1L) {
 
             LogUtils.d("Failed to create category terms taxonomy! Article: ${article.articleId}")
             return false
         }
+        //LogUtils.d("Category TermTaxonomyID: $termTaxonomyID. Term:${article.category} Article: ${article.articleId}")
+
+
+        LogUtils.d("Add Category:${article.category}, TermTaxonomyID: $termTaxonomyID, postID: $postID, Article: ${article.articleId}")
 
         // termTaxonomy和post文章关联
-        var termRelation = TableTermRelation(postID, termTaxonomyID)
+        val termRelation = TableTermRelation(postID, termTaxonomyID)
         return DBHelper.insertTermsRelation(conn, termRelation)
     }
 
@@ -141,25 +147,31 @@ object WordPressImporter {
         for (tag in article.tags) {
 
             // 从terms表获取这个分类的ID，没有就创建一个
-            var term = TableTerms(tag)
+            val term = TableTerms(tag)
             val termID = DBHelper.queryOrCreateTermsID(conn, term)
             if (termID == -1L) {
 
                 LogUtils.d("Failed to create category terms: $tag! Article: ${article.articleId}")
                 return false
             }
+            //LogUtils.d("Tag TermID: $termID. Term:${article.category} Article: ${article.articleId}")
+
 
             // 查看这个terms是否设置为TAG，否则创建一个， 目前都是以草稿发布，不更新数量
-            var termTaxonomy = TableTermTaxonomy(termID, TableTermTaxonomy.POST_TAG, 0)
+            val termTaxonomy = TableTermTaxonomy(termID, TableTermTaxonomy.POST_TAG, 0)
             val termTaxonomyID = DBHelper.updateOrCreateTermsTaxonomy(conn, termTaxonomy)
             if (termTaxonomyID == -1L) {
 
                 LogUtils.d("Failed to create tags terms taxonomy! Article: ${article.articleId}")
                 return false
             }
+            //LogUtils.d("Tag TermTaxonomyID: $termTaxonomyID. Term:${article.category} Article: ${article.articleId}")
+
+
+            LogUtils.d("Add Tag:$tag, TermTaxonomyID: $termTaxonomyID, postID: $postID, Article: ${article.articleId}")
 
             // TAG termTaxonomy和post文章关联
-            var termRelation = TableTermRelation(postID, termTaxonomyID)
+            val termRelation = TableTermRelation(postID, termTaxonomyID)
             if (!DBHelper.insertTermsRelation(conn, termRelation)) {
                 return false
             }

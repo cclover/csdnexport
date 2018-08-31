@@ -127,3 +127,7 @@ gradle-app.setting
 /config.json
 /csdn/
 /logs/
+.idea/markdown-navigator.xml
+.idea/markdown-navigator/
+src/main/java/
+src/test/

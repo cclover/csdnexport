@@ -19,7 +19,7 @@ object DBHelper {
 
     const val SQL_TERM_INSERT = "insert into wp_terms (name, slug, term_group) values (?,?,?)"
 
-    const val SQL_TERM_TAXONOMY_QUERY_ID = "select  term_taxonomy_id from wp_term_taxonomy where term_id = ?"
+    const val SQL_TERM_TAXONOMY_QUERY_ID = "select term_taxonomy_id from wp_term_taxonomy where term_id = ? and taxonomy = ?"
 
     const val SQL_TERM_TAXONOMY_UPDATE_COUNT = "update wp_term_taxonomy set count = count + 1 where term_id = ?"
 
@@ -127,7 +127,6 @@ object DBHelper {
         val rs = insertStatement.generatedKeys
         if (rs.next()) {
             articleId = rs.getLong(1)
-            println("生成记录的key为 ：$articleId")
         }
 
         return articleId
@@ -205,6 +204,7 @@ object DBHelper {
         var termTaxonomyID = -1L
         val pst = conn.prepareStatement(SQL_TERM_TAXONOMY_QUERY_ID)
         pst.setObject(1, termTaxonomy.term_id, Types.BIGINT)
+        pst.setString(2, termTaxonomy.taxonomy)
         val rs1 = pst.executeQuery()
 
         if (rs1.next()) {

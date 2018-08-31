@@ -11,6 +11,7 @@
   "csdn": {
     "userName": "csdn",
     "pageCount": 1,
-    "onlyOriginal": true
+    "onlyOriginal": true,
+    "articles": []
   }
 }
