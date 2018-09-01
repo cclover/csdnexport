@@ -30,7 +30,7 @@ class CSDNExporter {
     private fun exportAll() {
 
         for (i in 1..ExportConfigManager.getBlogListCount()) {
-            var url = ExportConfigManager.getBlogListUrl(i)
+            val url = ExportConfigManager.getBlogListUrl(i)
             Spider.create(CSDNPageProcessor()).addUrl(url).thread(3).run()
         }
     }

@@ -11,7 +11,6 @@ object WordPressImporter {
     /**
      * 导入到数据库，同步操作
      */
-    @Synchronized
     fun import(article: CSDNArticleInfo) {
 
         LogUtils.d("Import to wordpress. Article: ${article.articleId}")

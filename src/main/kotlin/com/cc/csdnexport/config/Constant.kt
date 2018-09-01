@@ -36,7 +36,7 @@ object Constant {
     /**
      * 文章列表DIV的 xpath
      */
-    const val XPATH_ARTICLE_MAIN = "//*[id=\"mainBox\"]/main/div[2]"
+    const val XPATH_ARTICLE_MAIN = "//*[@id=\"mainBox\"]/main/div[2]"
 
 
     /**
