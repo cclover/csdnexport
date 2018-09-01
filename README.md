@@ -91,19 +91,19 @@ Comments Count: 5
 
 CSDN
 
-![CSDN](https://github.com/cclover/csdnexport/blob/master/images/csdn.png)
+![image](https://github.com/cclover/csdnexport/blob/master/images/csdn.png)
 
 导入得到wordpress后，草稿列表
 
-![导入得到wordpress后，草稿列表](https://github.com/cclover/csdnexport/blob/master/images/wordpress_articles.png)
+![image](https://github.com/cclover/csdnexport/blob/master/images/wordpress_articles.png)
 
 数据库
 
-![数据库](https://github.com/cclover/csdnexport/blob/master/images/wordpress_db.png)
+![image](https://github.com/cclover/csdnexport/blob/master/images/wordpress_db.png)
 
 防盗链的图片正常显示
 
-![防盗链的图片正常显示](https://github.com/cclover/csdnexport/blob/master/images/worpress.png)
+![image](https://github.com/cclover/csdnexport/blob/master/images/worpress.png)
 
 
 # 注意
@@ -112,7 +112,6 @@ CSDN
 2. 采用XPATH来抓取网页的内容，CSDN页面布局可能导致失效
 3. Wordpress版本是4.9.8
 4. 使用前请做好数据库备份
-
 
 
 
