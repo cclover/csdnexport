@@ -90,16 +90,20 @@ Comments Count: 5
 50篇文章全部导入到服务器大概用了30秒。检查了一下没什么问题。
 
 CSDN
-[!img][images/csdn.png]
+
+[!img][https://github.com/cclover/csdnexport/blob/master/images/csdn.png]
 
 导入得到wordpress后，草稿列表
-[!img][images/wordpress_articles.png]
+
+[!img][https://github.com/cclover/csdnexport/blob/master/images/wordpress_articles.png]
 
 数据库
-[!img][images/wordpress_db.png]
+
+[!img][https://github.com/cclover/csdnexport/blob/master/images/wordpress_db.png]
 
 防盗链的图片正常显示
-[!img][images/worpress.png]
+
+[!img][https://github.com/cclover/csdnexport/blob/master/images/worpress.png]
 
 
 # 注意
